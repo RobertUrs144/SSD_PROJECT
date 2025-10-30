@@ -1,0 +1,2 @@
+# SSD_PROJECT
+Proiect SSD
