@@ -21,7 +21,17 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+let analytics = null;
+try {
+  // Analytics only works in browser environments; guard to avoid runtime errors
+  if (typeof window !== "undefined" && window?.document) {
+    analytics = getAnalytics(app);
+  }
+} catch (e) {
+  // Fail silently for analytics — we don't want this to break the app.
+  // eslint-disable-next-line no-console
+  console.warn("Firebase analytics unavailable:", e);
+}
 
 // Export commonly used Firebase services
 export const auth = getAuth(app);
