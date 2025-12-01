@@ -1,58 +1,50 @@
+// src/pages/LoginArtist.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './LoginArtist.css';
+import { auth } from '../firebase';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import './SignUpListener.css'; // Reuse listener CSS for same style
 
-const LoginArtist = ({ onLogin }) => {
+export default function LoginArtist() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [message, setMessage] = useState('');
   const navigate = useNavigate();
-  const [form, setForm] = useState({
-    email: '',
-    password: '',
-  });
-  const [error, setError] = useState('');
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const artists = JSON.parse(localStorage.getItem('artists') || '[]');
-    const user = artists.find(
-      (a) => a.email === form.email && a.password === form.password
-    );
-    if (!user) {
-      setError('Email sau parolă incorectă!');
+  const handleLogin = async () => {
+    if (!email || !password) {
+      setMessage('Email and password are required');
       return;
     }
-    setError('');
-    if (onLogin) onLogin(user);
-    // navigate to artist dashboard (route to be implemented)
-    navigate('/dashboard-artist');
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      setMessage('Logged in successfully');
+      setTimeout(() => navigate('/dashboard-artist'), 500);
+    } catch (err) {
+      setMessage(`Error: ${err.message}`);
+    }
   };
 
   return (
-    <div className="login-artist-container">
-      <form className="login-artist-form" onSubmit={handleSubmit}>
-        <h2>Login Artist</h2>
+    <div className="signup-listener-container">
+      <div className="signup-listener-form">
+        <h2>Login as Artist</h2>
         <input
           type="email"
-          name="email"
           placeholder="Email"
-          value={form.email}
-          onChange={handleChange}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
         <input
           type="password"
-          name="password"
           placeholder="Password"
-          value={form.password}
-          onChange={handleChange}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
         />
-        {error && <div className="error">{error}</div>}
-        <button type="submit">Login</button>
-      </form>
+        <button onClick={handleLogin}>Login</button>
+        {message && <p className="error">{message}</p>}
+      </div>
     </div>
   );
-};
-
-export default LoginArtist;
+}

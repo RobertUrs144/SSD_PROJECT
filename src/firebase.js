@@ -1,40 +1,25 @@
-// Import the functions you need from the SDKs you need
+// firebase.js
+// Import the functions you need from the SDK
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
+import { getAuth } from "firebase/auth";  // <--- Auth import
+import { getFirestore } from "firebase/firestore"; // optional, if using Firestore
+import { getStorage } from "firebase/storage";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyDkKHpQzUOa8VYpe2WWeeUnxa8sL2o3z8o",
-  authDomain: "ssd-project-cfd40.firebaseapp.com",
-  projectId: "ssd-project-cfd40",
-  // storageBucket is usually in the form '<project-id>.appspot.com'
-  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET || "ssd-project-cfd40.appspot.com",
-  messagingSenderId: "379426672100",
-  appId: "1:379426672100:web:0259503b1ed946829f0bf1",
-  measurementId: "G-1KFE7RXJPH"
+  apiKey: "AIzaSyCV2ArXzGn9_X-uFsqg5EQh_rVl5Cs8ZP0",
+  authDomain: "ssd-proiect-urs.firebaseapp.com",
+  projectId: "ssd-proiect-urs",
+  storageBucket: "ssd-proiect-urs.firebasestorage.app",
+  messagingSenderId: "447176070740",
+  appId: "1:447176070740:web:b9fcf77fb0779c93743fc1",
+  measurementId: "G-J0172BD5FE"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-let analytics = null;
-try {
-  // Analytics only works in browser environments; guard to avoid runtime errors
-  if (typeof window !== "undefined" && window?.document) {
-    analytics = getAnalytics(app);
-  }
-} catch (e) {
-  // Fail silently for analytics — we don't want this to break the app.
-  // eslint-disable-next-line no-console
-  console.warn("Firebase analytics unavailable:", e);
-}
 
-// Export commonly used Firebase services
+// Initialize Firebase
+
+const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
-
-export default app;
+export const storage = getStorage(app);

@@ -1,78 +1,84 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { auth } from '../firebase';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import './SignUpListener.css';
 
-const SignUpListener = ({ onSignUp }) => {
+export default function SignUpListener() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [displayName, setDisplayName] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [message, setMessage] = useState('');
   const navigate = useNavigate();
-  const [form, setForm] = useState({
-    username: '',
-    email: '',
-    password: '',
-  });
-  const [error, setError] = useState('');
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const validate = () => {
-    if (!form.username || !form.email || !form.password) {
-      return 'Toate câmpurile sunt obligatorii!';
-    }
-    if (!/^[^@]+@[^@]+\.[^@]+$/.test(form.email)) {
-      return 'Email invalid!';
-    }
-    if (form.password.length < 6) {
-      return 'Parola trebuie să aibă minim 6 caractere!';
-    }
-    return '';
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const err = validate();
-    if (err) {
-      setError(err);
+  const handleSignUp = async () => {
+    if (!email || !password || !displayName) {
+      setMessage('All fields are required');
       return;
     }
-    const listeners = JSON.parse(localStorage.getItem('listeners') || '[]');
-    listeners.push(form);
-    localStorage.setItem('listeners', JSON.stringify(listeners));
-    setError('');
-    if (onSignUp) onSignUp();
-    navigate('/login-listener');
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(userCredential.user, { displayName });
+      setMessage(`User created: ${userCredential.user.email}`);
+      setTimeout(() => navigate('/login-listener'), 1000);
+    } catch (err) {
+      setMessage(`Error: ${err.message}`);
+    }
   };
 
   return (
     <div className="signup-listener-container">
-      <form className="signup-listener-form" onSubmit={handleSubmit}>
-        <h2>Sign Up Listener</h2>
+      <div className="signup-listener-form">
+        <h2>Sign Up</h2>
+
+        <label>Username</label>
         <input
           type="text"
-          name="username"
+          value={displayName}
+          onChange={(e) => setDisplayName(e.target.value)}
           placeholder="Username"
-          value={form.username}
-          onChange={handleChange}
         />
+
+        <label>Email</label>
         <input
           type="email"
-          name="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           placeholder="Email"
-          value={form.email}
-          onChange={handleChange}
         />
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={form.password}
-          onChange={handleChange}
-        />
-        {error && <div className="error">{error}</div>}
-        <button type="submit">Sign Up</button>
-      </form>
+
+        <label>Password</label>
+        <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+          <input
+            type={showPassword ? 'text' : 'password'}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Enter password"
+            style={{ flex: 1, paddingRight: '2rem' }}
+          />
+          <span
+            onClick={() => setShowPassword(!showPassword)}
+            style={{
+              position: 'absolute',
+              right: '0.5rem',
+              cursor: 'pointer',
+              fontSize: '1.25rem',
+              color: '#6b6f9a'
+            }}
+          >
+            {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+          </span>
+        </div>
+
+        <button className="btn btn-primary" onClick={handleSignUp} style={{ marginTop: '1rem' }}>
+          Sign Up
+        </button>
+
+        {message && <p className="error">{message}</p>}
+      </div>
     </div>
   );
-};
-
-export default SignUpListener;
+}
