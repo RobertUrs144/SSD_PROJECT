@@ -4,7 +4,7 @@ import { updateProfile, updatePassword, signOut, onAuthStateChanged } from 'fire
 import { useNavigate } from 'react-router-dom';
 import './SpotifyTheme.css'; // Ensure you import your shared theme file
 
-export default function EditListenerProfile() {
+export default function EditArtistProfile() {
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -15,7 +15,7 @@ export default function EditListenerProfile() {
 
     // --- 1. AUTH & DATA LISTENER ---
     useEffect(() => {
-        // Ensure the user is authenticated and is a Listener (handled by App.js router)
+        // Ensure the user is authenticated and is an Artist (handled by App.js router)
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             if (currentUser) {
                 setUser(currentUser);
@@ -23,7 +23,7 @@ export default function EditListenerProfile() {
                 setLoading(false);
             } else {
                 // If not logged in, redirect away (though App.js should catch this)
-                navigate('/login-listener');
+                navigate('/login-artist');
             }
         });
         return () => unsubscribe();
@@ -58,7 +58,7 @@ export default function EditListenerProfile() {
                 
                 // Force re-login after password change for security
                 await signOut(auth);
-                navigate('/login-listener');
+                navigate('/login-artist');
                 return;
 
             } catch (error) {
@@ -107,7 +107,7 @@ export default function EditListenerProfile() {
         <div className="dark-background" style={{ minHeight: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'white' }}>
             
             <button 
-                onClick={() => navigate('/dashboard-listener')}
+                onClick={() => navigate('/dashboard-artist')}
                 style={{
                     position: 'absolute', 
                     top: '20px', 
@@ -124,7 +124,7 @@ export default function EditListenerProfile() {
             </button>
 
             <div style={{ backgroundColor: '#181818', padding: '40px', borderRadius: '8px', width: '450px', border: '1px solid #333' }}>
-                <h2 style={{ marginBottom: '30px', fontSize: '2rem', color: '#1DB954' }}>Edit Listener Profile</h2>
+                <h2 style={{ marginBottom: '30px', fontSize: '2rem', color: '#1DB954' }}>Edit Artist Profile</h2>
                 
                 {message && (
                     <p style={{ backgroundColor: message.includes("Error") ? '#501515' : '#104d20', padding: '10px', borderRadius: '4px', marginBottom: '20px', border: '1px solid #1DB954' }}>
@@ -134,8 +134,8 @@ export default function EditListenerProfile() {
 
                 <form onSubmit={handleSaveProfile}>
                     
-                    {/* DISPLAY NAME */}
-                    <label style={{ fontSize: '14px', color: '#b3b3b3', display: 'block', marginBottom: '5px' }}>Display Name</label>
+                    {/* ARTIST NAME */}
+                    <label style={{ fontSize: '14px', color: '#b3b3b3', display: 'block', marginBottom: '5px' }}>Artist Name</label>
                     <input 
                         type="text" 
                         value={displayName} 
